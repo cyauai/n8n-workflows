@@ -1,0 +1,397 @@
+{
+  "createdAt": "2025-05-29T05:00:34.590Z",
+  "updatedAt": "2025-05-29T05:00:48.000Z",
+  "id": "NWIF6G6tMAmf4S4T",
+  "name": "My workflow",
+  "active": false,
+  "isArchived": true,
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatXAiGrok",
+      "typeVersion": 1,
+      "position": [
+        260,
+        40
+      ],
+      "id": "55f0a8da-6f51-483d-bbcc-6155c303ef11",
+      "name": "xAI Grok Chat Model",
+      "credentials": {
+        "xAiApi": {
+          "id": "XqWvMQGpHLIcMAN0",
+          "name": "xAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are an intelligent router for a personal digital assistant system. Your purpose is to analyze incoming JSON text messages and determine which sub-agent should process the workflow based on the content and intent of the message. The available sub-agents are:\n\nExpenses Agent: Handles workflows related to expenses, including tracking, categorizing, approving, or reporting financial transactions and budgets.\nCalendar Agent: Handles workflows related to calendar events, scheduling, activities, reminders, or time management.\nAdditional sub-agents may be added in the future. If the message does not clearly align with any sub-agent, respond with an error indicating the need for clarification.\n\nToday is: {{ $now }}\n\nInstructions:\n\nAnalyze the following JSON text message: {{ $json.text }}\nIdentify the intent and key content of the message to determine the appropriate sub-agent.",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        300,
+        -180
+      ],
+      "id": "e4f969fc-6763-4c55-920f-980ba75e8198",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "description": "=This is responsible for handling workflows related to financial expenses, specifically focusing on the following two tasks:\n\nRecording Expenses: Capturing details of financial transactions, including amount, category (e.g., food, travel, utilities), date, and merchant.\n\nGenerating Reports: Creating summaries or detailed reports of expenses, filtered by criteria such as category, time period, or other parameters.",
+        "workflowId": {
+          "__rl": true,
+          "value": "GUl3VsXnEGY6DGFs",
+          "mode": "list",
+          "cachedResultName": "Expense Agent"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        560,
+        40
+      ],
+      "id": "4f357e51-12b6-429c-a9c1-c718ca067b06",
+      "name": "Expenses Agent"
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $workflow.id }}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        420,
+        40
+      ],
+      "id": "8f794475-abf7-4add-9220-ca0c121857f9",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "id": "d5601309-6a0a-49bb-b0d7-0ae5453e9f22",
+      "name": "Receive User Input (Telegram)\t",
+      "type": "n8n-nodes-base.telegramTrigger",
+      "position": [
+        -620,
+        -180
+      ],
+      "webhookId": "19e39057-373f-4ca7-b999-c747d5f71767",
+      "typeVersion": 1.2,
+      "credentials": {
+        "telegramApi": {
+          "id": "X3xyCkYhphdeXFbK",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "version": 2,
+            "leftValue": "",
+            "caseSensitive": true,
+            "typeValidation": "strict"
+          },
+          "combinator": "and",
+          "conditions": [
+            {
+              "id": "c64b00ea-20f1-4d44-aed6-1528d537fc84",
+              "operator": {
+                "name": "filter.operator.equals",
+                "type": "string",
+                "operation": "equals"
+              },
+              "leftValue": "={{ $json.message.voice.mime_type }}",
+              "rightValue": "audio/ogg"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "71f002b9-6195-4dd2-ae75-46b30a420a7e",
+      "name": "Is Voice Message?\t",
+      "type": "n8n-nodes-base.if",
+      "position": [
+        -400,
+        -180
+      ],
+      "typeVersion": 2.2
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "fileId": "={{ $json.message.voice.file_id }}"
+      },
+      "id": "4c196170-e351-4084-80ab-75caceac7499",
+      "name": "Download Voice File\t",
+      "type": "n8n-nodes-base.telegram",
+      "position": [
+        -180,
+        -280
+      ],
+      "webhookId": "1e904d77-b0a3-41ac-8624-a729103c9a14",
+      "typeVersion": 1.2,
+      "credentials": {
+        "telegramApi": {
+          "id": "X3xyCkYhphdeXFbK",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "audio",
+        "operation": "transcribe",
+        "options": {}
+      },
+      "id": "67071ea5-c9cd-4a7e-a7eb-253d37b39864",
+      "name": "Transcribe Voice to Text\t",
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "position": [
+        40,
+        -280
+      ],
+      "typeVersion": 1.8,
+      "credentials": {
+        "openAiApi": {
+          "id": "NUICx7NPWNNMbCtK",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "41b525e6-a59f-47c7-b6ee-2b88eaa386fe",
+              "name": "text",
+              "type": "string",
+              "value": "={{ $json.message.text }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "46a450bc-29e4-4e25-8676-7f385bfaf16f",
+      "name": "Extract Text Message\t",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        40,
+        -80
+      ],
+      "typeVersion": 3.4
+    },
+    {
+      "parameters": {
+        "chatId": "617798358",
+        "text": "={{ $json.output }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        660,
+        -180
+      ],
+      "id": "ece8a100-7166-42cd-a9bc-bdba9dea7b91",
+      "name": "Telegram",
+      "webhookId": "ca6d7dee-9a37-4f0f-8f76-f1edfbdbcdb0",
+      "credentials": {
+        "telegramApi": {
+          "id": "X3xyCkYhphdeXFbK",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "path": "3fb7c3fd-d621-4b34-8d1d-1b5191f2b347"
+      },
+      "type": "@n8n/n8n-nodes-langchain.mcpTrigger",
+      "typeVersion": 1,
+      "position": [
+        -460,
+        160
+      ],
+      "id": "5ba2238d-7423-42e2-8a39-3e88ecbe43fc",
+      "name": "MCP Server Trigger",
+      "webhookId": "3fb7c3fd-d621-4b34-8d1d-1b5191f2b347"
+    },
+    {
+      "parameters": {
+        "authentication": "serviceAccount",
+        "documentId": {
+          "__rl": true,
+          "value": "1rLFPxNAwt4v-ESOG81gAhNY2eLGG6Ms3X7kmZptQtfs",
+          "mode": "list",
+          "cachedResultName": "Expenses",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1rLFPxNAwt4v-ESOG81gAhNY2eLGG6Ms3X7kmZptQtfs/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Sheet', ``, 'string') }}"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.6,
+      "position": [
+        -480,
+        340
+      ],
+      "id": "be508a89-e0b5-4785-aae7-a133ca3dbf36",
+      "name": "Google Sheets"
+    }
+  ],
+  "connections": {
+    "xAI Grok Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Telegram",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Expenses Agent": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Receive User Input (Telegram)\t": {
+      "main": [
+        [
+          {
+            "node": "Is Voice Message?\t",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Is Voice Message?\t": {
+      "main": [
+        [
+          {
+            "node": "Download Voice File\t",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Extract Text Message\t",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download Voice File\t": {
+      "main": [
+        [
+          {
+            "node": "Transcribe Voice to Text\t",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Transcribe Voice to Text\t": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Text Message\t": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets": {
+      "ai_tool": [
+        [
+          {
+            "node": "MCP Server Trigger",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {},
+  "versionId": "7d67eb0f-58d3-45a2-81de-c8dc00fdf04e",
+  "triggerCount": 0,
+  "tags": []
+}
