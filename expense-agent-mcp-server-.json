@@ -1,0 +1,77 @@
+{
+  "createdAt": "2025-05-30T04:15:31.903Z",
+  "updatedAt": "2025-05-30T04:54:01.000Z",
+  "id": "hObfmO2yBrLWuGhq",
+  "name": "Expense Agent MCP Server",
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1rLFPxNAwt4v-ESOG81gAhNY2eLGG6Ms3X7kmZptQtfs",
+          "mode": "list",
+          "cachedResultName": "Expenses",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1rLFPxNAwt4v-ESOG81gAhNY2eLGG6Ms3X7kmZptQtfs/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Sheet', ``, 'string') }}"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.6,
+      "position": [
+        -500,
+        40
+      ],
+      "id": "095a0aac-fa9a-4102-8929-aa00907704c0",
+      "name": "Google Sheets",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "gw6FpmtTbeALEK1v",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "path": "1fb8233e-d0cd-4871-a1b7-4420637c0bf0"
+      },
+      "type": "@n8n/n8n-nodes-langchain.mcpTrigger",
+      "typeVersion": 1,
+      "position": [
+        -520,
+        -140
+      ],
+      "id": "b2969da1-bfd1-478d-bced-dd505d750484",
+      "name": "MCP Server Trigger1",
+      "webhookId": "1fb8233e-d0cd-4871-a1b7-4420637c0bf0"
+    }
+  ],
+  "connections": {
+    "Google Sheets": {
+      "ai_tool": [
+        [
+          {
+            "node": "MCP Server Trigger1",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {},
+  "versionId": "480ecb7f-b65f-4736-8712-12be6f058ee1",
+  "triggerCount": 1,
+  "tags": []
+}
