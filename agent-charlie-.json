@@ -1,0 +1,355 @@
+{
+  "createdAt": "2025-05-29T05:40:05.569Z",
+  "updatedAt": "2025-05-30T04:39:45.000Z",
+  "id": "SIcY9BUiStnx5ZaQ",
+  "name": "Agent Charlie",
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "==You are an intelligent routing agent for a personal digital assistant. Your main task is to accurately classify incoming user messages and route them to the most appropriate specialized sub-agent for processing.\n\nAvailable Sub-Agents:\n\n1.  **Expenses Agent**:\n    * **Description**: This agent is designed to manage all financial expense-related tasks.\n    * **Capabilities**:\n        * **Recording Expenses**: Captures details of new financial transactions (e.g., amount, category like food/travel/utilities, date, merchant, description).\n        * **Generating Reports**: Provides summaries or detailed reports of past expenses, filterable by criteria such as category, time period (e.g., \"today\", \"last month\", \"this year\"), or other parameters.\n    * **Keywords/Phrases**: Look for terms related to money spent, costs, bills, spending, budget, expenses, reports, summaries, tracking, recording, adding, analyzing, etc. (e.g., \"spent $50\", \"record food expense\", \"how much did I spend\", \"expense report\", \"add bill\", \"我洗左幾多錢\", \"記錄開支\", \"費用報告\").\n\nToday's date is: {{ $now }}\n\nInstructions for Routing:\n1.  Carefully analyze the user's JSON text message: {{ $json.text }}\n2.  Determine the primary intent of the message.\n3.  **If the message's intent is clearly related to managing financial expenses (either recording or reporting), always call the 'Expenses Agent' tool.**\n    * **If the message is about recording an expense (e.g., mentions an amount and an item/category, or an instruction to 'add'/'record'), call the 'Expenses Agent' tool with `task: \"record\"`.** Examples: \"Spent $25 on coffee\", \"Record 150 for dinner\", \"Add a travel expense of $500\", \"我食飯洗左$100\", \"記低今日開支\".\n    * **If the message is about generating an expense report (e.g., asks for a summary, total spending, or spending by category/time period), call the 'Expenses Agent' tool with `task: \"report\"`.** Examples: \"How much did I spend this month?\", \"Show me my expenses for last week\", \"Report on food spending\", \"今個月用咗幾多錢？\", \"我上個月開支報告\", \"所有費用總結\".\n4.  If the message does not clearly align with the 'Expenses Agent's capabilities or is ambiguous, return a JSON object with an error message: `{\"error\": \"Please clarify your request. I can help with managing your expenses.\"}`\n\nRules:\n* Default to the current date ({{ $today }}) if no specific date is mentioned for an expense.\n* Prioritize explicit instructions over general keywords.",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        360,
+        80
+      ],
+      "id": "4110eea8-ded1-4554-95dc-d278bb33b77d",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "description": "=This is responsible for handling workflows related to financial expenses, specifically focusing on the following two tasks:\n\nRecording Expenses: Capturing details of financial transactions, including amount, category (e.g., food, travel, utilities), date, and merchant.\n\nGenerating Reports: Creating summaries or detailed reports of expenses, filtered by criteria such as category, time period, or other parameters.",
+        "workflowId": {
+          "__rl": true,
+          "value": "Id1NS0Vxu4LuHReH",
+          "mode": "list",
+          "cachedResultName": "Expense Agent"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        620,
+        300
+      ],
+      "id": "000d5fe1-7b51-4329-abbd-f79b0bd83f26",
+      "name": "Expenses Agent"
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $today }}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        480,
+        300
+      ],
+      "id": "22e5cd3d-1e7a-4022-8c68-cd0891c08fb0",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "id": "dd805a42-ff99-4b43-8695-32f1754b3fe9",
+      "name": "Receive User Input (Telegram)\t",
+      "type": "n8n-nodes-base.telegramTrigger",
+      "position": [
+        -560,
+        80
+      ],
+      "webhookId": "19e39057-373f-4ca7-b999-c747d5f71767",
+      "typeVersion": 1.2,
+      "credentials": {
+        "telegramApi": {
+          "id": "X3xyCkYhphdeXFbK",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "version": 2,
+            "leftValue": "",
+            "caseSensitive": true,
+            "typeValidation": "strict"
+          },
+          "combinator": "and",
+          "conditions": [
+            {
+              "id": "c64b00ea-20f1-4d44-aed6-1528d537fc84",
+              "operator": {
+                "name": "filter.operator.equals",
+                "type": "string",
+                "operation": "equals"
+              },
+              "leftValue": "={{ $json.message.voice.mime_type }}",
+              "rightValue": "audio/ogg"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "7cf724be-892b-4ae0-8cd3-550c676b5f7a",
+      "name": "Is Voice Message?\t",
+      "type": "n8n-nodes-base.if",
+      "position": [
+        -340,
+        80
+      ],
+      "typeVersion": 2.2
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "fileId": "={{ $json.message.voice.file_id }}"
+      },
+      "id": "c05e9e39-0641-4b8c-950a-66f308b6ef9f",
+      "name": "Download Voice File\t",
+      "type": "n8n-nodes-base.telegram",
+      "position": [
+        -120,
+        -20
+      ],
+      "webhookId": "1e904d77-b0a3-41ac-8624-a729103c9a14",
+      "typeVersion": 1.2,
+      "credentials": {
+        "telegramApi": {
+          "id": "X3xyCkYhphdeXFbK",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "audio",
+        "operation": "transcribe",
+        "options": {}
+      },
+      "id": "05902935-f348-4f5f-aaf4-3f3f9f65bf01",
+      "name": "Transcribe Voice to Text\t",
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "position": [
+        100,
+        -20
+      ],
+      "typeVersion": 1.8,
+      "credentials": {
+        "openAiApi": {
+          "id": "NUICx7NPWNNMbCtK",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "41b525e6-a59f-47c7-b6ee-2b88eaa386fe",
+              "name": "text",
+              "type": "string",
+              "value": "={{ $json.message.text }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "36d8a8b8-8b49-41ba-b414-f167fb41d9fe",
+      "name": "Extract Text Message\t",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        100,
+        180
+      ],
+      "typeVersion": 3.4
+    },
+    {
+      "parameters": {
+        "chatId": "617798358",
+        "text": "={{ $json.output }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        720,
+        80
+      ],
+      "id": "37078d0f-9cbd-4c1f-84c1-0970c2a9c0a6",
+      "name": "Telegram",
+      "webhookId": "ca6d7dee-9a37-4f0f-8f76-f1edfbdbcdb0",
+      "credentials": {
+        "telegramApi": {
+          "id": "X3xyCkYhphdeXFbK",
+          "name": "Telegram account"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4.1-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-4.1-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        300,
+        300
+      ],
+      "id": "4b8555f0-7821-4e94-9131-4d77dc49dd03",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "NUICx7NPWNNMbCtK",
+          "name": "OpenAi account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Telegram",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Expenses Agent": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Receive User Input (Telegram)\t": {
+      "main": [
+        [
+          {
+            "node": "Is Voice Message?\t",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Is Voice Message?\t": {
+      "main": [
+        [
+          {
+            "node": "Download Voice File\t",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Extract Text Message\t",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download Voice File\t": {
+      "main": [
+        [
+          {
+            "node": "Transcribe Voice to Text\t",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Transcribe Voice to Text\t": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Text Message\t": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "c2798053-04d2-4c60-8e68-a4110fced9df",
+  "triggerCount": 1,
+  "tags": []
+}
