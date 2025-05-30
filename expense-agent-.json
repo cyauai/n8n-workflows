@@ -1,0 +1,231 @@
+{
+  "createdAt": "2025-05-29T05:37:19.562Z",
+  "updatedAt": "2025-05-30T04:53:58.000Z",
+  "id": "Id1NS0Vxu4LuHReH",
+  "name": "Expense Agent",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "inputSource": "passthrough"
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -940,
+        -520
+      ],
+      "id": "b4e1ba33-f12b-4860-902a-544a2dd0f34c",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "==Analyze the JSON message: {{ $('When Executed by Another Workflow').item.json.query }}\n\nYou are a highly specialized and precise agent for managing financial expenses. Your core responsibility is to correctly identify whether a user wants to **record a new expense** or **generate an expense report**, and then to use the appropriate tool with all relevant parameters.\n\nHere are the tools available to you and when to use them:\n\n- **Create Record**:\n    * **Purpose**: To log a new financial transaction.\n    * **Use When**: The user provides details indicating a new expense, such as an **amount**, a **category** (e.g., food, travel, utilities), a **date**, a **merchant**, or a general instruction to 'add' or 'record' a cost.\n    * **Examples**: \"Spent $50 on food today.\", \"Record utilities for $100 on May 28th.\", \"I paid $20 for coffee.\", \"食飯洗咗一百蚊今日.\", \"記低車費$50.\"\n\n- **MCP Client**:\n    * **Purpose**: To initiate the generation of an expense report.\n    * **Use When**: The user asks for any kind of summary, total spending, or detailed breakdown of expenses, especially when mentioning a **time period** (e.g., \"this month\", \"last week\", \"today\", \"this year\") or a **category**.\n    * **Parameters to Extract and Provide**: When calling this tool for a report, you **must extract and provide the following parameters** from the user's query. If a parameter is not specified, apply the default rule:\n        * `time_period`: (Optional) The specific period for the report. For relative terms, convert to exact dates:\n            * If \"this month\", use \"this month\".\n            * If \"last month\", use the specific month and year (e.g., \"April 2025\").\n            * If \"this year\", use \"this year\".\n            * If \"last year\", use the specific year (e.g., \"2024\").\n            * For other specific periods (e.g., \"today\", \"yesterday\", \"June 2024\"), use the exact phrase.\n        * `category`: (Optional) The specific expense category for the report (e.g., \"food\", \"travel\", \"utilities\"). If not specified, include it as an empty string or omit it.\n        * `sheet_name`: (Required for Google Sheet) This must be the **year** for the Google Sheet tab (e.g., \"2025\", \"2024\"). **Always default to the current year ({{ $now.year }}) if a specific year is not mentioned.**\n    * **Examples for how to call the MCP Client tool with parameters**:\n        * User: \"How much did I spend this month?\"\n            -> Call tool with: `MCP Client({ \"time_period\": \"this month\", \"sheet_name\": \"{{ $now.year }}\" })`\n        * User: \"今個月用咗幾多錢？\"\n            -> Call tool with: `MCP Client({ \"time_period\": \"this month\", \"sheet_name\": \"{{ $now.year }}\" })`\n        * User: \"Show me my expenses for last month.\"\n            -> Call tool with: `MCP Client({ \"time_period\": \"{{ $now.minus({ months: 1 }).toFormat('MMMM yyyy') }}\", \"sheet_name\": \"{{ $now.minus({ months: 1 }).year }}\" })`\n        * User: \"我上個月開支報告\"\n            -> Call tool with: `MCP Client({ \"time_period\": \"{{ $now.minus({ months: 1 }).toFormat('MMMM yyyy') }}\", \"sheet_name\": \"{{ $now.minus({ months: 1 }).year }}\" })`\n        * User: \"Show me my expenses for last year.\"\n            -> Call tool with: `MCP Client({ \"time_period\": \"{{ $now.minus({ years: 1 }).year }}\", \"sheet_name\": \"{{ $now.minus({ years: 1 }).year }}\" })`\n        * User: \"Show me food expenses for 2024.\"\n            -> Call tool with: `MCP Client({ \"time_period\": \"2024\", \"category\": \"food\", \"sheet_name\": \"2024\" })`\n        * User: \"幫我出返個開支報告\" (General report)\n            -> Call tool with: `MCP Client({ \"time_period\": \"this month\", \"sheet_name\": \"{{ $now.year }}\" })`\n        * User: \"Summary of expenses for last week.\"\n            -> Call tool with: `MCP Client({ \"time_period\": \"last week\", \"sheet_name\": \"{{ $now.year }}\" })`\n\n**Instructions for Processing User Messages:**\n\n1.  **Strictly determine the user's singular intent.** Focus on whether they clearly want to **record** or **report**.\n2.  If the intent is unequivocally to **record an expense**, call the 'Create Record' tool.\n3.  If the intent is unequivocally to **generate a report**, **first extract the necessary parameters (`time_period`, `category`, `sheet_name`) from the query, then call the 'MCP Client' tool with these extracted parameters.** After successfully calling the 'MCP Client' tool, immediately confirm to the user that their report request is being processed. Respond with a message like: \"Okay, I'm generating your expense report now. Please wait a moment.\" or \"Your report request has been received. I'll get that for you shortly.\"\n4.  **If the intent is ambiguous, too broad, or does not clearly align with either recording or reporting**, **DO NOT** attempt to guess. Instead, explicitly return a structured error message asking for clarification.\n    * **Error Output Format**: `{\"error\": \"Please clarify your request. To help me, please tell me if you want to record an expense (e.g., 'Spent $50 on food') or generate a report (e.g., 'How much did I spend this month?').\"}`\n",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        -628,
+        -520
+      ],
+      "id": "883a2067-9587-4f6d-a644-301eabca7429",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $today }}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        -600,
+        -300
+      ],
+      "id": "a8705b26-e5b2-4e4e-b285-94e9270b193d",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "description": "=- **Create Record**:\n    * **Purpose**: To log a new financial transaction.\n    * **Use When**: The user's message explicitly starts with \"紀錄\" (record) or \"record\", and provides details indicating a new expense such as an **amount**, a **category** (e.g., food, travel, utilities), a **date**, or a **merchant**. **If the message does not begin with \"紀錄\" or \"record\", this tool should NOT be used, even if expense details are present.**\n    * **Examples**: \"紀錄 今日食飯洗咗$100\", \"Record $50 on coffee today\", \"紀錄 交通費$30 五月廿九號\", \"Record utilities for $100 on May 28th.\"",
+        "workflowId": {
+          "__rl": true,
+          "value": "Xi795rCEEUij9lbS",
+          "mode": "list",
+          "cachedResultName": "Create Record Workflow"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        -480,
+        -300
+      ],
+      "id": "7dac0032-f9f7-47ca-b120-a078aa8e5bac",
+      "name": "Create Record",
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "sseEndpoint": "https://n8n.thedg.agency/mcp/1fb8233e-d0cd-4871-a1b7-4420637c0bf0/sse"
+      },
+      "type": "@n8n/n8n-nodes-langchain.mcpClientTool",
+      "typeVersion": 1,
+      "position": [
+        -360,
+        -300
+      ],
+      "id": "f160c105-ba69-452c-8922-51e81ee317e5",
+      "name": "MCP Client",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4o-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -760,
+        -300
+      ],
+      "id": "c1a34f58-e3bd-4f23-92fa-6be278d5c2f2",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "NUICx7NPWNNMbCtK",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "617798358",
+        "text": "={{ $json.output }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -260,
+        -520
+      ],
+      "id": "2397be9d-c4f8-4ebd-81bd-8b341e1f8aed",
+      "name": "Telegram",
+      "webhookId": "117dcaae-d7d9-41f8-aa24-2a502a2d38ba",
+      "credentials": {
+        "telegramApi": {
+          "id": "X3xyCkYhphdeXFbK",
+          "name": "Telegram account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Record": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "MCP Client": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Telegram",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {
+    "When Executed by Another Workflow": [
+      {
+        "json": {
+          "task": "record",
+          "amount": 3200,
+          "category": "other",
+          "date": "2025-05-29T00:00:00.000-04:00"
+        }
+      }
+    ]
+  },
+  "versionId": "72e4ede6-c3bf-413d-a02f-2dea7d89b8bf",
+  "triggerCount": 0,
+  "tags": []
+}
