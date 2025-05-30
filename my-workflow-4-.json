@@ -1,0 +1,418 @@
+{
+  "createdAt": "2025-05-29T05:38:37.831Z",
+  "updatedAt": "2025-05-29T05:38:55.000Z",
+  "id": "xGqMQuMySdrUVq1l",
+  "name": "My workflow 4",
+  "active": false,
+  "isArchived": true,
+  "nodes": [
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $('When Executed by Another Workflow').item.json.query }}",
+        "hasOutputParser": true,
+        "messages": {
+          "messageValues": [
+            {
+              "message": "=You are an expense tracker AI that processes user inputs from transcribed Telegram voice messages, which may be in Cantonese or English. Your task is to extract and organize expense-related information into a JSON object with the following fields:\n- date: The date of the expense (if mentioned as 'today', use {{ $today }} and convert to YYYY-MM-DD; if another date is specified, convert to YYYY-MM-DD; if unknown, default to {{ $today }} in YYYY-MM-DD).\n- month: The numerical month (1-12) extracted from the 'date' after it is converted to YYYY-MM-DD.\n- year: The numerical year extracted from the 'date' after it is converted to YYYY-MM-DD.\n- amount: The numerical amount spent (in HKD for Cantonese inputs, extract only the number).\n- category: The type of expense (e.g., 'food', 'transport', 'shopping'). Use 'food' for dining-related expenses. If the category is unidentifiable, use 'other'.\n\nIf the input is in Cantonese, assume it’s in Hong Kong dollars (HKD). If any information is missing, use reasonable defaults (e.g., 'unknown' for date before conversion, 'other' for category). Return the output as a JSON object."
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.7,
+      "position": [
+        0,
+        -140
+      ],
+      "id": "2dba85c6-542a-4cff-9e9b-d95c90692cf0",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "model": "grok-2-1212",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatXAiGrok",
+      "typeVersion": 1,
+      "position": [
+        20,
+        80
+      ],
+      "id": "a7d5c761-3d6e-438b-9860-1684da460379",
+      "name": "xAI Grok Chat Model",
+      "credentials": {
+        "xAiApi": {
+          "id": "XqWvMQGpHLIcMAN0",
+          "name": "xAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "1cb743ea-3be8-4f1f-8cfa-9940b217e5e8",
+              "name": "amount",
+              "value": "={{ $json.output.amount }}",
+              "type": "number"
+            },
+            {
+              "id": "f69468ab-9547-42f6-9489-990a880004df",
+              "name": "category",
+              "value": "={{ $json.output.category }}",
+              "type": "string"
+            },
+            {
+              "id": "4a5c4586-a87f-48ee-b97e-f8cf43e9d3c1",
+              "name": "date",
+              "value": "={{ $json.output.date }}",
+              "type": "string"
+            },
+            {
+              "id": "39358803-68bf-49ca-a0fa-cb68d15c2459",
+              "name": "month",
+              "value": "={{ $json.output.month }}",
+              "type": "string"
+            },
+            {
+              "id": "2df6b848-fa8f-4f36-ba8b-6eec1549b10f",
+              "name": "year",
+              "value": "={{ $json.output.year }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        380,
+        -40
+      ],
+      "id": "a9f77e71-56ec-457b-8a1d-5cff0a1b481b",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n\t\"amount\": 88,\n\t\"category\": \"other\",\n    \"date\": \"2025-04-06\",\n    \"month\": 4,\n    \"year\": 2025\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.2,
+      "position": [
+        140,
+        80
+      ],
+      "id": "487f8eaf-a1bf-4564-a3f1-ce6343de7670",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1rLFPxNAwt4v-ESOG81gAhNY2eLGG6Ms3X7kmZptQtfs",
+          "mode": "list",
+          "cachedResultName": "Expenses",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1rLFPxNAwt4v-ESOG81gAhNY2eLGG6Ms3X7kmZptQtfs/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "={{ $json.year }}",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Amount": "={{ $json.amount }}",
+            "Date": "={{ $json.date }}",
+            "Month": "={{ $json.month }}",
+            "Category": "={{ $json.category }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Month",
+              "displayName": "Month",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Amount",
+              "displayName": "Amount",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Category",
+              "displayName": "Category",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        820,
+        60
+      ],
+      "id": "cfa2f894-b5b2-4e29-bf85-91ae3f4931cc",
+      "name": "Google Sheets",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "gw6FpmtTbeALEK1v",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "617798358",
+        "text": "=你嘅開支已經記錄！日期：{{ $json.Date }}，金額：{{ $json.Amount }}港幣，類別：{{ $json.Category.toUpperCase() }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1040,
+        60
+      ],
+      "id": "d063b54b-c07e-4030-b84d-1de65baf0398",
+      "name": "Telegram",
+      "webhookId": "fb56155f-e561-4b9f-8ee9-7c652017348d",
+      "credentials": {
+        "telegramApi": {
+          "id": "X3xyCkYhphdeXFbK",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.amount }}",
+                    "rightValue": 1,
+                    "operator": {
+                      "type": "number",
+                      "operation": "lt"
+                    },
+                    "id": "7655e3c2-d841-42d0-95fd-9cf4862f5cce"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "3bfaab59-68bf-421a-a006-f0f3d93ba4bc",
+                    "leftValue": "={{ $json.amount }}",
+                    "rightValue": 0,
+                    "operator": {
+                      "type": "number",
+                      "operation": "gt"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        600,
+        -40
+      ],
+      "id": "28e1aa6b-cc32-4d01-852c-ace8cf4c7eb7",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "chatId": "617798358",
+        "text": "Wrong Input",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        820,
+        -140
+      ],
+      "id": "bcab35cf-6096-40b8-88fe-742d7356b1ae",
+      "name": "Telegram1",
+      "webhookId": "0809a9b5-1566-442a-b844-14962e058231",
+      "credentials": {
+        "telegramApi": {
+          "id": "X3xyCkYhphdeXFbK",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "inputSource": "passthrough"
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -240,
+        -140
+      ],
+      "id": "9cfe1926-d511-4212-8f90-f76afa211870",
+      "name": "When Executed by Another Workflow"
+    }
+  ],
+  "connections": {
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "xAI Grok Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets": {
+      "main": [
+        [
+          {
+            "node": "Telegram",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Telegram1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Google Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {
+    "When Executed by Another Workflow": [
+      {
+        "json": {
+          "result": "搭車用左20蚊"
+        }
+      }
+    ]
+  },
+  "versionId": "52ef3beb-2e1d-4087-b88a-342153d97887",
+  "triggerCount": 0,
+  "tags": []
+}
