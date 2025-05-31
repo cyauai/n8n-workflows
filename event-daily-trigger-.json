@@ -1,0 +1,219 @@
+{
+  "createdAt": "2025-05-30T09:37:43.216Z",
+  "updatedAt": "2025-05-31T13:09:25.000Z",
+  "id": "AwW7vTK2Y5xqAgbA",
+  "name": "Event Daily Trigger",
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 8
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -620,
+        -40
+      ],
+      "id": "d84a2cb5-23b3-4f7b-b9c6-2816a85c05c4",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Today is  {{ $json.timestamp }}\n\n**Important Timezone Conversion Rules (for all time parameters):**\nThe timestamp is always UTC and I want you to convert the time to UTC+8 when performing the get all events for today. And always use traditional chinese to output the response.\n\nGet all the events today with the MCP client through the google calendar.",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        -360,
+        -40
+      ],
+      "id": "a1ee25a7-4708-4f2f-9cd8-b2d29ce1f43d",
+      "name": "AI Agent",
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $today }}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        -280,
+        180
+      ],
+      "id": "0cd56f48-5f69-481d-93eb-6c1b33a5086d",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "sseEndpoint": "https://n8n.thedg.agency/mcp/c734cf98-3d5a-4cbd-af97-8ad2da760944/sse"
+      },
+      "type": "@n8n/n8n-nodes-langchain.mcpClientTool",
+      "typeVersion": 1,
+      "position": [
+        -160,
+        180
+      ],
+      "id": "864c78b7-02b6-4d6c-8f27-09276d9ea3f1",
+      "name": "MCP Client"
+    },
+    {
+      "parameters": {
+        "chatId": "617798358",
+        "text": "={{ $json.output }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        40,
+        -40
+      ],
+      "id": "100c95b8-b9e2-44bd-b05e-7e3a566559e6",
+      "name": "Telegram",
+      "webhookId": "73833902-0455-4b38-bf2c-fa4fa82f7f5a",
+      "credentials": {
+        "telegramApi": {
+          "id": "X3xyCkYhphdeXFbK",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "grok-3",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatXAiGrok",
+      "typeVersion": 1,
+      "position": [
+        -420,
+        180
+      ],
+      "id": "7f16776c-08cc-4a99-8c8e-a37d7b36d8e6",
+      "name": "xAI Grok Chat Model",
+      "credentials": {
+        "xAiApi": {
+          "id": "XqWvMQGpHLIcMAN0",
+          "name": "xAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 21
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -640,
+        140
+      ],
+      "id": "aa230296-d8d7-4e19-9b33-9e6b4a201c18",
+      "name": "Schedule Trigger1"
+    }
+  ],
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "MCP Client": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Telegram",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "xAI Grok Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger1": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": {
+    "node:Schedule Trigger": {
+      "recurrenceRules": []
+    },
+    "node:Schedule Trigger1": {
+      "recurrenceRules": []
+    }
+  },
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "cd1dd535-ac4a-4983-8b47-ab576db5fc21",
+  "triggerCount": 2,
+  "tags": []
+}
