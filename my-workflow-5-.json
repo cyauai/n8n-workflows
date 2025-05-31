@@ -1,0 +1,413 @@
+{
+  "createdAt": "2025-05-31T01:53:37.921Z",
+  "updatedAt": "2025-05-31T13:08:41.000Z",
+  "id": "D0oGGLZXiXBsTFjN",
+  "name": "My workflow 5",
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 7
+            }
+          ]
+        }
+      },
+      "id": "33a36837-4c37-4fa8-8583-c3264b59959e",
+      "name": "Get Articles Daily",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "position": [
+        560,
+        1760
+      ],
+      "typeVersion": 1.2
+    },
+    {
+      "parameters": {
+        "content": "\n## Let AI read the tech news for you\n\nThis workflow fetches news via [RSS feeds](https://en.wikipedia.org/wiki/RSS) from selected tech websites, stores them in a vector database and uses an AI agent to send you a weekly, personalized newsletter - keeping you informed without daily distractions.\n\n### How it works\n* A **daily scheduled trigger** fetches articles from multiple popular tech RSS feeds like Wired, TechCrunch, and The Verge.\n\n* Fetched articles are:\n  * **Normalized** to extract titles, summaries, and publish dates.\n  * **Converted to vector embeddings** via OpenAI and stored in memory for fast semantic querying.\n\n* A **weekly scheduled trigger** activates the AI summarization flow:\n  * The AI is provided with your interests (e.g., *AI, games, gadgets*) and the desired number of items (e.g., 15).\n  * It queries the vector store to retrieve relevant articles and summarizes the most newsworthy stories.\n  * The summary is converted into a clean, email-friendly format and sent to your inbox.\n\n### How to use\n1. Connect your **OpenAI** and **Gmail** accounts to n8n.\n2. Customize the list of RSS feeds in the “Set Tech News RSS Feeds” node.\n3. Update your interests and number of desired news items in the “Your Topics of Interest” node.\n4. Enter your email address in the \"Send Newsletter\" node.\n4. Activate the workflow and let the automation run on schedule.\n\n### Requirements\n* **OpenAI** credentials for embeddings and summarization\n* **Gmail** (or another email service) for sending the newsletter",
+        "height": 920,
+        "width": 420
+      },
+      "id": "2dd3f281-d620-4368-ab8c-3045c72c2718",
+      "name": "Sticky Note5",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -20,
+        1440
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "e9f27ceb-c5f2-4997-8cb1-67576a7bb337",
+              "name": "title",
+              "type": "string",
+              "value": "={{ $json.title }}"
+            },
+            {
+              "id": "4c4f9417-40f2-4fb0-9976-d09f5984680f",
+              "name": "content",
+              "type": "string",
+              "value": "={{ $json['content:encodedSnippet'] ?? $json.contentSnippet}}"
+            },
+            {
+              "id": "e1986bac-054e-4240-ba50-536dbcd27337",
+              "name": "date",
+              "type": "string",
+              "value": "={{ $json.isoDate}}"
+            },
+            {
+              "id": "9566e23c-ac30-4d66-abbd-889f322688b7",
+              "name": "link",
+              "type": "string",
+              "value": "={{ $json.link }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "f214c3b3-acb9-4bfb-b3f3-b257b223f522",
+      "name": "Set and Normalize Fields",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        1220,
+        1760
+      ],
+      "typeVersion": 3.4
+    },
+    {
+      "parameters": {
+        "content": "## 1. Save news in a vector store (runs daily)",
+        "height": 600,
+        "width": 1560,
+        "color": 7
+      },
+      "id": "1c29f251-c40a-4108-87fa-ac9711327cdc",
+      "name": "Sticky Note7",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        160,
+        1620
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "chatId": "617798358",
+        "text": "=**{{ $json.title }}**\n\n---\n\n## Content\n{{ $json.content }}\n\n## Published\n{{ $json.date }}\n\n## Link\n{{ $json.link }}\n\n---",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1440,
+        1760
+      ],
+      "id": "b390e29d-44d2-4139-841a-a87ab4f133a4",
+      "name": "Telegram",
+      "webhookId": "ca6d7dee-9a37-4f0f-8f76-f1edfbdbcdb0",
+      "credentials": {
+        "telegramApi": {
+          "id": "mu6k0vyaptaTrxai",
+          "name": "Telegram account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "### 💡 Customizing this workflow\n\n* Want to use different sources? Swap in your own RSS feeds, or use an API-based news aggregator.\n* Replace the in-memory vector store with **Pinecone**, **Weaviate**, or another persistent vector DB for longer-term storage.\n* Adjust the agent's summarization style to suit internal updates, industry-specific briefings, or even entertainment recaps.\nHere’s an additional bullet point to include under **Customizing this workflow**:\n* Prefer chat over email? Replace the email node with a **Telegram bot** to receive your personalized tech newsletter directly in a Telegram chat.\n\n",
+        "height": 280,
+        "width": 520,
+        "color": 7
+      },
+      "id": "b4c4a032-8993-458d-8a18-de2e3eee1fbc",
+      "name": "Sticky Note6",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        2060,
+        4060
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "maxItems": 10
+      },
+      "type": "n8n-nodes-base.limit",
+      "typeVersion": 1,
+      "position": [
+        1000,
+        1660
+      ],
+      "id": "12783997-3ff7-4624-b05c-29ab599c8296",
+      "name": "Limit"
+    },
+    {
+      "parameters": {
+        "content": "### Edit this:",
+        "height": 240,
+        "width": 220,
+        "color": 3
+      },
+      "id": "b23678f4-1c42-44c1-91c3-7533913d8e7e",
+      "name": "Sticky Note4",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        740,
+        1540
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "url": "=https://news.google.com/rss/headlines/section/topic/TECHNOLOGY?hl=zh-HK&gl=HK&ceid=HK:zh-Hant",
+        "options": {
+          "ignoreSSL": false
+        }
+      },
+      "id": "73833ac8-95af-4f8e-92d5-26501e508a0b",
+      "name": "Tech",
+      "type": "n8n-nodes-base.rssFeedRead",
+      "position": [
+        780,
+        1460
+      ],
+      "typeVersion": 1.1
+    },
+    {
+      "parameters": {
+        "url": "=https://news.google.com.hk/news?pz=1&cf=all&ned=hk&hl=zh-TW&output=rss",
+        "options": {
+          "ignoreSSL": false
+        }
+      },
+      "id": "c10257f0-021a-45d6-a3ce-0b72983f6a58",
+      "name": "HK",
+      "type": "n8n-nodes-base.rssFeedRead",
+      "position": [
+        780,
+        1660
+      ],
+      "typeVersion": 1.1
+    },
+    {
+      "parameters": {
+        "url": "=https://news.google.com/rss/headlines/section/topic/WORLD?hl=zh-HK&gl=HK&ceid=HK:zh-Hant",
+        "options": {
+          "ignoreSSL": false
+        }
+      },
+      "id": "80613bd2-dc41-4b25-b448-b4c4ef872c87",
+      "name": "Globe",
+      "type": "n8n-nodes-base.rssFeedRead",
+      "position": [
+        780,
+        1860
+      ],
+      "typeVersion": 1.1
+    },
+    {
+      "parameters": {
+        "url": "=https://news.google.com/rss/headlines/section/topic/BUSINESS?hl=zh-HK&gl=HK&ceid=HK:zh-Hant",
+        "options": {
+          "ignoreSSL": false
+        }
+      },
+      "id": "49f5fb8d-5823-40f0-8b2e-87c993b1a370",
+      "name": "Business",
+      "type": "n8n-nodes-base.rssFeedRead",
+      "position": [
+        780,
+        2060
+      ],
+      "typeVersion": 1.1
+    },
+    {
+      "parameters": {
+        "maxItems": 10
+      },
+      "type": "n8n-nodes-base.limit",
+      "typeVersion": 1,
+      "position": [
+        1000,
+        1460
+      ],
+      "id": "d8bb0b83-1780-4c4f-904d-b189ed7c735a",
+      "name": "Limit1"
+    },
+    {
+      "parameters": {
+        "maxItems": 10
+      },
+      "type": "n8n-nodes-base.limit",
+      "typeVersion": 1,
+      "position": [
+        1000,
+        1860
+      ],
+      "id": "ae455786-e34e-4a94-9f84-95920848adec",
+      "name": "Limit2"
+    },
+    {
+      "parameters": {
+        "maxItems": 10
+      },
+      "type": "n8n-nodes-base.limit",
+      "typeVersion": 1,
+      "position": [
+        1000,
+        2060
+      ],
+      "id": "2403fa18-9522-4b82-9dd6-e2253933a205",
+      "name": "Limit3"
+    }
+  ],
+  "connections": {
+    "Get Articles Daily": {
+      "main": [
+        [
+          {
+            "node": "HK",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Tech",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Globe",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Business",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set and Normalize Fields": {
+      "main": [
+        [
+          {
+            "node": "Telegram",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Limit": {
+      "main": [
+        [
+          {
+            "node": "Set and Normalize Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HK": {
+      "main": [
+        [
+          {
+            "node": "Limit",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Tech": {
+      "main": [
+        [
+          {
+            "node": "Limit1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Globe": {
+      "main": [
+        [
+          {
+            "node": "Limit2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Business": {
+      "main": [
+        [
+          {
+            "node": "Limit3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Limit1": {
+      "main": [
+        [
+          {
+            "node": "Set and Normalize Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Limit2": {
+      "main": [
+        [
+          {
+            "node": "Set and Normalize Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Limit3": {
+      "main": [
+        [
+          {
+            "node": "Set and Normalize Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": {
+    "node:Get Articles Daily": {
+      "recurrenceRules": []
+    }
+  },
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "86edb8c9-2823-43d3-9f41-a229ff44fbf2",
+  "triggerCount": 1,
+  "tags": []
+}
