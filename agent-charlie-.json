@@ -1,6 +1,6 @@
 {
   "createdAt": "2025-05-29T05:40:05.569Z",
-  "updatedAt": "2025-05-30T04:39:45.000Z",
+  "updatedAt": "2025-05-31T01:28:28.000Z",
   "id": "SIcY9BUiStnx5ZaQ",
   "name": "Agent Charlie",
   "active": true,
@@ -9,13 +9,13 @@
     {
       "parameters": {
         "promptType": "define",
-        "text": "==You are an intelligent routing agent for a personal digital assistant. Your main task is to accurately classify incoming user messages and route them to the most appropriate specialized sub-agent for processing.\n\nAvailable Sub-Agents:\n\n1.  **Expenses Agent**:\n    * **Description**: This agent is designed to manage all financial expense-related tasks.\n    * **Capabilities**:\n        * **Recording Expenses**: Captures details of new financial transactions (e.g., amount, category like food/travel/utilities, date, merchant, description).\n        * **Generating Reports**: Provides summaries or detailed reports of past expenses, filterable by criteria such as category, time period (e.g., \"today\", \"last month\", \"this year\"), or other parameters.\n    * **Keywords/Phrases**: Look for terms related to money spent, costs, bills, spending, budget, expenses, reports, summaries, tracking, recording, adding, analyzing, etc. (e.g., \"spent $50\", \"record food expense\", \"how much did I spend\", \"expense report\", \"add bill\", \"我洗左幾多錢\", \"記錄開支\", \"費用報告\").\n\nToday's date is: {{ $now }}\n\nInstructions for Routing:\n1.  Carefully analyze the user's JSON text message: {{ $json.text }}\n2.  Determine the primary intent of the message.\n3.  **If the message's intent is clearly related to managing financial expenses (either recording or reporting), always call the 'Expenses Agent' tool.**\n    * **If the message is about recording an expense (e.g., mentions an amount and an item/category, or an instruction to 'add'/'record'), call the 'Expenses Agent' tool with `task: \"record\"`.** Examples: \"Spent $25 on coffee\", \"Record 150 for dinner\", \"Add a travel expense of $500\", \"我食飯洗左$100\", \"記低今日開支\".\n    * **If the message is about generating an expense report (e.g., asks for a summary, total spending, or spending by category/time period), call the 'Expenses Agent' tool with `task: \"report\"`.** Examples: \"How much did I spend this month?\", \"Show me my expenses for last week\", \"Report on food spending\", \"今個月用咗幾多錢？\", \"我上個月開支報告\", \"所有費用總結\".\n4.  If the message does not clearly align with the 'Expenses Agent's capabilities or is ambiguous, return a JSON object with an error message: `{\"error\": \"Please clarify your request. I can help with managing your expenses.\"}`\n\nRules:\n* Default to the current date ({{ $today }}) if no specific date is mentioned for an expense.\n* Prioritize explicit instructions over general keywords.",
+        "text": "==You are an intelligent routing agent for a personal digital assistant. Your main task is to accurately classify incoming user messages and route them to the most appropriate specialized sub-agent for processing.\n\nAvailable Sub-Agents:\n\n1.  **Expenses Agent**:\n    * **Description**: This agent is designed to manage all financial expense-related tasks.\n    * **Capabilities**:\n        * **Recording Expenses**: Captures details of new financial transactions (e.g., amount, category like food/travel/utilities, date, merchant, description).\n        * **Generating Reports**: Provides summaries or detailed reports of past expenses, filterable by criteria such as category, time period (e.g., \"today\", \"last month\", \"this year\"), or other parameters.\n    * **Keywords/Phrases**: Look for terms related to money spent, costs, bills, spending, budget, expenses, reports, summaries, tracking, recording, adding, analyzing, etc. (e.g., \"spent $50\", \"record food expense\", \"how much did I spend\", \"expense report\", \"add bill\", \"我洗左幾多錢\", \"記錄開支\", \"費用報告\").\n\n2.  **Calendar Agent**:\n    * **Description**: This agent manages tasks related to scheduling, events, and calendar interactions. It assumes user-provided times are in **UTC+8 timezone** by default, unless another timezone or region is explicitly mentioned. All processed times for calendar operations will be **converted to UTC** for internal consistency.\n    * **Capabilities**:\n        * **Creating Events/Tasks**: Adds new entries to a calendar (e.g., meetings, reminders, appointments).\n        * **Retrieving Events/Tasks**: Fetches information about existing events or tasks (e.g., \"What's on my schedule?\", \"When is my next meeting?\").\n        * **Modifying Events/Tasks**: Updates existing calendar entries (e.g., changing time, date, or details of a meeting).\n    * **Keywords/Phrases**: Look for terms related to calendar, schedule, event, meeting, appointment, reminder, add to calendar, create event, what's my agenda, list events, update event, change meeting, \"行事曆\", \"日程\", \"會議\", \"提醒\", \"更改活動\", \"修改日程\".\n\nToday's date is: {{ $now }}\n\nInstructions for Routing:\n1.  Carefully analyze the user's JSON text message: {{ $json.text }}\n2.  Determine the primary intent of the message.\n3.  **If the message's intent is clearly related to managing financial expenses (either recording or reporting), always call the 'Expenses Agent' tool.**\n    * **If the message is about recording an expense (e.g., mentions an amount and an item/category, or an instruction to 'add'/'record'), call the 'Expenses Agent' tool with `task: \"record\"`.** Examples: \"Spent $25 on coffee\", \"Record 150 for dinner\", \"Add a travel expense of $500\", \"我食飯洗左$100\", \"記低今日開支\".\n    * **If the message is about generating an expense report (e.g., asks for a summary, total spending, or spending by category/time period), call the 'Expenses Agent' tool with `task: \"report\"`.** Examples: \"How much did I spend this month?\", \"Show me my expenses for last week\", \"Report on food spending\", \"今個月用咗幾多錢？\", \"我上個月開支報告\", \"所有費用總結\".\n4.  **If the message's intent is clearly related to calendar, scheduling, or events (creating, retrieving, or modifying), always call the 'MCP Client' tool with the task \"calendar\".**\n    * **Examples**: \"Add a meeting to my calendar tomorrow at 10 AM\", \"What's on my schedule for next week?\", \"Remind me to call John at 3 PM\", \"幫我加個會議\", \"我聽日有咩行程？\", \"修改下星期三的會議時間\", \"把我的牙醫預約改到下個月\"\n    * **Tool Call Example**: `MCP Client({ \"task\": \"calendar\" })`\n5.  If the message does not clearly align with the 'Expenses Agent's or 'Calendar Agent's capabilities, or is ambiguous, return a JSON object with an error message: `{\"error\": \"Please clarify your request. I can help with managing your expenses and calendar.\"}`\n\nRules:\n* Default to the current date ({{ $today }}) if no specific date is mentioned for an expense or calendar event.\n* Prioritize explicit instructions over general keywords.\n* Always use the same language of the query for sending message to telegram",
         "options": {}
       },
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 2,
       "position": [
-        360,
+        780,
         80
       ],
       "id": "4110eea8-ded1-4554-95dc-d278bb33b77d",
@@ -42,7 +42,7 @@
       "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
       "typeVersion": 2.2,
       "position": [
-        620,
+        560,
         300
       ],
       "id": "000d5fe1-7b51-4329-abbd-f79b0bd83f26",
@@ -51,12 +51,12 @@
     {
       "parameters": {
         "sessionIdType": "customKey",
-        "sessionKey": "={{ $today }}"
+        "sessionKey": "={{ $now }}"
       },
       "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
       "typeVersion": 1.3,
       "position": [
-        480,
+        440,
         300
       ],
       "id": "22e5cd3d-1e7a-4022-8c68-cd0891c08fb0",
@@ -193,7 +193,7 @@
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        720,
+        1140,
         80
       ],
       "id": "37078d0f-9cbd-4c1f-84c1-0970c2a9c0a6",
@@ -204,31 +204,74 @@
           "id": "X3xyCkYhphdeXFbK",
           "name": "Telegram account"
         }
-      },
-      "disabled": true
+      }
     },
     {
       "parameters": {
-        "model": {
+        "description": "=This is responsible for handling workflows related to calendar and events. Including create, update, get or delete any events",
+        "workflowId": {
           "__rl": true,
-          "value": "gpt-4.1-mini",
+          "value": "uIGbyKF2q0QMYFhm",
           "mode": "list",
-          "cachedResultName": "gpt-4.1-mini"
+          "cachedResultName": "Calendar Agent"
         },
-        "options": {}
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
       },
-      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
-      "typeVersion": 1.2,
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
       "position": [
-        300,
+        680,
         300
       ],
-      "id": "4b8555f0-7821-4e94-9131-4d77dc49dd03",
-      "name": "OpenAI Chat Model",
+      "id": "6c2d0c36-d204-406d-894d-92ebbc326f48",
+      "name": "Calendar Agent"
+    },
+    {
+      "parameters": {
+        "model": "grok-3",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatXAiGrok",
+      "typeVersion": 1,
+      "position": [
+        320,
+        300
+      ],
+      "id": "8918ff7a-6e13-44f9-87b0-9bc55ca788d0",
+      "name": "xAI Grok Chat Model",
       "credentials": {
-        "openAiApi": {
-          "id": "NUICx7NPWNNMbCtK",
-          "name": "OpenAi account"
+        "xAiApi": {
+          "id": "XqWvMQGpHLIcMAN0",
+          "name": "xAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "617798358",
+        "text": "=Processing...",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        700,
+        -80
+      ],
+      "id": "b5d98ee5-10aa-4b5b-979a-4021bba23587",
+      "name": "Telegram1",
+      "webhookId": "ca6d7dee-9a37-4f0f-8f76-f1edfbdbcdb0",
+      "credentials": {
+        "telegramApi": {
+          "id": "X3xyCkYhphdeXFbK",
+          "name": "Telegram account"
         }
       }
     }
@@ -311,6 +354,11 @@
       "main": [
         [
           {
+            "node": "Telegram1",
+            "type": "main",
+            "index": 0
+          },
+          {
             "node": "AI Agent",
             "type": "main",
             "index": 0
@@ -322,6 +370,11 @@
       "main": [
         [
           {
+            "node": "Telegram1",
+            "type": "main",
+            "index": 0
+          },
+          {
             "node": "AI Agent",
             "type": "main",
             "index": 0
@@ -329,7 +382,18 @@
         ]
       ]
     },
-    "OpenAI Chat Model": {
+    "Calendar Agent": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "xAI Grok Chat Model": {
       "ai_languageModel": [
         [
           {
@@ -338,6 +402,11 @@
             "index": 0
           }
         ]
+      ]
+    },
+    "Telegram1": {
+      "main": [
+        []
       ]
     }
   },
@@ -349,7 +418,7 @@
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "c2798053-04d2-4c60-8e68-a4110fced9df",
+  "versionId": "340a77fb-64c7-42a0-9601-22207f68a5c1",
   "triggerCount": 1,
   "tags": []
 }
