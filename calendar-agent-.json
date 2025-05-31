@@ -1,0 +1,651 @@
+{
+  "createdAt": "2025-05-30T05:08:19.078Z",
+  "updatedAt": "2025-05-31T01:09:01.000Z",
+  "id": "uIGbyKF2q0QMYFhm",
+  "name": "Calendar Agent",
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "operation": "getAll",
+        "calendar": {
+          "__rl": true,
+          "value": "opoiuiotqq@gmail.com",
+          "mode": "list",
+          "cachedResultName": "opoiuiotqq@gmail.com"
+        },
+        "returnAll": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Return_All', ``, 'boolean') }}",
+        "timeMin": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('After', ``, 'string') }}",
+        "timeMax": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Before', ``, 'string') }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [
+        -3400,
+        860
+      ],
+      "id": "6618c34d-e935-40ee-aeaa-730b8af075fa",
+      "name": "Get events",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "PtS7X674JMWFmjR3",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "calendar": {
+          "__rl": true,
+          "value": "opoiuiotqq@gmail.com",
+          "mode": "list",
+          "cachedResultName": "opoiuiotqq@gmail.com"
+        },
+        "start": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Start', ``, 'string') }}",
+        "end": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('End', ``, 'string') }}",
+        "additionalFields": {
+          "description": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Description', ``, 'string') }}",
+          "summary": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Summary', ``, 'string') }}"
+        }
+      },
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [
+        -3280,
+        860
+      ],
+      "id": "c3308fa5-29d9-4be2-8628-5bd960b9e258",
+      "name": "Create event",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "PtS7X674JMWFmjR3",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "delete",
+        "calendar": {
+          "__rl": true,
+          "value": "opoiuiotqq@gmail.com",
+          "mode": "list",
+          "cachedResultName": "opoiuiotqq@gmail.com"
+        },
+        "eventId": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Event_ID', ``, 'string') }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [
+        -3160,
+        860
+      ],
+      "id": "b1bfb7f1-c67c-4f2d-b171-d39555c3fd4b",
+      "name": "Delete event",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "PtS7X674JMWFmjR3",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "calendar": {
+          "__rl": true,
+          "value": "opoiuiotqq@gmail.com",
+          "mode": "list",
+          "cachedResultName": "opoiuiotqq@gmail.com"
+        },
+        "eventId": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Event_ID', ``, 'string') }}",
+        "useDefaultReminders": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Use_Default_Reminders', ``, 'boolean') }}",
+        "updateFields": {
+          "description": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Description', ``, 'string') }}",
+          "end": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('End', ``, 'string') }}",
+          "start": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Start', ``, 'string') }}",
+          "summary": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Summary', ``, 'string') }}"
+        }
+      },
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [
+        -3040,
+        860
+      ],
+      "id": "87414108-74b5-410b-a204-c58f0a4f393b",
+      "name": "Update event",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "PtS7X674JMWFmjR3",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "inputSource": "passthrough"
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -3400,
+        -20
+      ],
+      "id": "79deea29-fd9f-4138-a6c2-768afee3369d",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Analyze the user's request from the main workflow: \"{{ $('When Executed by Another Workflow').item.json.query }}\"\n\nYour task is to classify the user's intent regarding calendar events into one of the following categories: **create, get, update, or delete**.\n\n**Output Format:**\nRespond with *only* the single lowercase keyword that best describes the user's intent. Do not include any other text, punctuation, or explanation.\n\n**Intent Classification Rules:**\n\n* **create**: If the user wants to add a new event, meeting, appointment, or reminder to the calendar.\n    * Examples: \"Add a meeting tomorrow at 10 AM\", \"Schedule a call with John\", \"Remind me to buy groceries\", \"幫我加個會議\", \"記下我嘅約會\"\n* **get**: If the user wants to retrieve, view, list, or check existing events, meetings, or their schedule.\n    * Examples: \"What's on my schedule?\", \"List my events for next week\", \"Show me my appointments for today\", \"我聽日有咩行程？\", \"查看我嘅會議\"\n* **update**: If the user wants to change, modify, reschedule, or edit an existing event.\n    * Examples: \"Change my meeting time to 3 PM\", \"Reschedule my dentist appointment to next month\", \"Modify the details of my 9 AM event\", \"修改下星期三的會議時間\", \"更改我嘅牙醫預約\"\n* **delete**: If the user wants to remove, cancel, or delete an existing event.\n    * Examples: \"Delete my meeting with Sarah\", \"Cancel my appointment on Friday\", \"Remove the reminder for laundry\", \"刪除我嘅會議\", \"取消我嘅提醒\"\n\nIf the intent is unclear or does not fit any of the above categories, output \"unclear\".\n\n---\n\n### How to use this prompt in your n8n workflow:\n\n1.  **\"Basic LLM Chain\" Node:** Paste the prompt above into the `Text` parameter of your \"Basic LLM Chain\" node (`70d183cb-464a-4ecc-ad83-5fa6d1500aeb`).\n2.  **Output Mapping:** The \"Basic LLM Chain\" node's output will now be a single word (e.g., \"create\", \"get\", \"update\", \"delete\", or \"unclear\").\n3.  **Add a \"Switch\" Node:**\n    * Connect the `main` output of your \"Basic LLM Chain\" node to the input of a new **\"Switch\" node**.\n    * **Configuration for the Switch Node:**\n        * In the \"Conditions\" section, set the `Value` to `={{ $json.text }}` (assuming the LLM chain outputs its response into the `text` field).\n        * Create different \"Cases\" for each expected intent:\n            * **Case 1:** `Equals` -> `create`\n            * **Case 2:** `Equals` -> `get`\n            * **Case 3:** `Equals` -> `update`\n            * **Case 4:** `Equals` -> `delete`\n            * **Case 5 (Fallback):** You can use the \"Else\" branch for \"unclear\" or any unexpected output.\n\nThis setup will allow your Calendar Agent to dynamically route user requests to the appropriate sub-flow (create, get, update, delete) based on the LLM's classification.",
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.7,
+      "position": [
+        -3180,
+        -20
+      ],
+      "id": "70d183cb-464a-4ecc-ad83-5fa6d1500aeb",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "model": "grok-3",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatXAiGrok",
+      "typeVersion": 1,
+      "position": [
+        -3092,
+        200
+      ],
+      "id": "c17f4b1c-2da6-4723-8bf9-2ba0fbc85ced",
+      "name": "xAI Grok Chat Model",
+      "credentials": {
+        "xAiApi": {
+          "id": "XqWvMQGpHLIcMAN0",
+          "name": "xAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "5653911f-6e9d-46b6-819d-667d242ced3b",
+              "leftValue": "={{ $json.text }}",
+              "rightValue": "get",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            },
+            {
+              "id": "1006af28-f1ea-441a-94c8-cd9740c16bb6",
+              "leftValue": "={{ $json.text }}",
+              "rightValue": "create",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -2804,
+        -20
+      ],
+      "id": "31385c0a-748a-44d9-8b06-e6567a677b6c",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "sseEndpoint": "https://n8n.thedg.agency/mcp/c734cf98-3d5a-4cbd-af97-8ad2da760944/sse"
+      },
+      "type": "@n8n/n8n-nodes-langchain.mcpClientTool",
+      "typeVersion": 1,
+      "position": [
+        -2344,
+        -100
+      ],
+      "id": "5ed7bd9d-dba7-417a-8981-e211c25653e0",
+      "name": "MCP Client",
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $today }}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        -2464,
+        -100
+      ],
+      "id": "85d284de-7dce-4381-89d5-c5b81dca7c90",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $now }}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        -2464,
+        400
+      ],
+      "id": "b7a77fa7-0946-4727-b0b9-af7df5b27b6e",
+      "name": "Simple Memory1"
+    },
+    {
+      "parameters": {
+        "model": "grok-3",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatXAiGrok",
+      "typeVersion": 1,
+      "position": [
+        -2584,
+        400
+      ],
+      "id": "1b98f43c-ee16-4ff3-b118-939501f8377d",
+      "name": "xAI Grok Chat Model2",
+      "credentials": {
+        "xAiApi": {
+          "id": "XqWvMQGpHLIcMAN0",
+          "name": "xAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Today's date is: {{ $now }}\n\nInstruction - \n1. {{ $('When Executed by Another Workflow').item.json.query }}. \n2. Trigger the MCP Client to create or get the event from google calandar\n3. If no time duration specified for creating the event, always make it 30 minutes\n\n",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        -2552,
+        -320
+      ],
+      "id": "1326b5a5-bc6c-430f-ad36-126dace9e65c",
+      "name": "Get or Create event agent"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Today's date is: {{ $now }}\n\nYou are a tool to get the event id by the user query {{ $('When Executed by Another Workflow').item.json.query }}. Only perform the get event to retrieve the event id action, even if the query is about to update or delete an event.\n\n\n",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        -2552,
+        180
+      ],
+      "id": "343bca8f-37ed-40f5-83a9-194f47af7586",
+      "name": "Update or Remove event agent"
+    },
+    {
+      "parameters": {
+        "path": "c734cf98-3d5a-4cbd-af97-8ad2da760944"
+      },
+      "id": "b4d7ca06-3cd9-458a-bb23-10e60d7e2adb",
+      "name": "MCP Server Trigger for Create & Get",
+      "type": "@n8n/n8n-nodes-langchain.mcpTrigger",
+      "position": [
+        -3308,
+        640
+      ],
+      "webhookId": "c734cf98-3d5a-4cbd-af97-8ad2da760944",
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "sseEndpoint": "https://n8n.thedg.agency/mcp/c734cf98-3d5a-4cbd-af97-8ad2da760944/sse"
+      },
+      "type": "@n8n/n8n-nodes-langchain.mcpClientTool",
+      "typeVersion": 1,
+      "position": [
+        -2344,
+        400
+      ],
+      "id": "1e2dacdf-b35e-4cb0-a38d-cd5853c087e8",
+      "name": "MCP Client for Get Event only",
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=The {{ $json.output }} will contain the event ID. Use the event ID and trigger the MCP Client to perform the user query.\n\nToday's date is: {{ $now }}\n\nInstruction - \n{{ $('When Executed by Another Workflow').item.json.query }}\n\n",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        -2112,
+        180
+      ],
+      "id": "ae57a0de-21d2-4999-8f99-4b6201225753",
+      "name": "AI Agent",
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $now }}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        -2024,
+        400
+      ],
+      "id": "800e595e-1a0d-4bcb-8b19-209542da0c10",
+      "name": "Simple Memory2"
+    },
+    {
+      "parameters": {
+        "sseEndpoint": "https://n8n.thedg.agency/mcp/c734cf98-3d5a-4cbd-af97-8ad2da760944/sse"
+      },
+      "type": "@n8n/n8n-nodes-langchain.mcpClientTool",
+      "typeVersion": 1,
+      "position": [
+        -1904,
+        400
+      ],
+      "id": "32ee3b18-8356-43ee-b5fc-daf2f5409fb1",
+      "name": "MCP Client for Update and Delete",
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "model": "grok-3",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatXAiGrok",
+      "typeVersion": 1,
+      "position": [
+        -2140,
+        400
+      ],
+      "id": "d1a2c484-dd5f-4a3f-b664-1d06b0905998",
+      "name": "xAI Grok Chat Model1",
+      "credentials": {
+        "xAiApi": {
+          "id": "XqWvMQGpHLIcMAN0",
+          "name": "xAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "grok-3",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatXAiGrok",
+      "typeVersion": 1,
+      "position": [
+        -2580,
+        -80
+      ],
+      "id": "d027280b-3116-48df-addb-3ea6f4ee4959",
+      "name": "xAI Grok Chat Model3",
+      "credentials": {
+        "xAiApi": {
+          "id": "XqWvMQGpHLIcMAN0",
+          "name": "xAi account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Get events": {
+      "ai_tool": [
+        [
+          {
+            "node": "MCP Server Trigger for Create & Get",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create event": {
+      "ai_tool": [
+        [
+          {
+            "node": "MCP Server Trigger for Create & Get",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Delete event": {
+      "ai_tool": [
+        [
+          {
+            "node": "MCP Server Trigger for Create & Get",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update event": {
+      "ai_tool": [
+        [
+          {
+            "node": "MCP Server Trigger for Create & Get",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "xAI Grok Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Get or Create event agent",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Update or Remove event agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "MCP Client": {
+      "ai_tool": [
+        [
+          {
+            "node": "Get or Create event agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "Get or Create event agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory1": {
+      "ai_memory": [
+        [
+          {
+            "node": "Update or Remove event agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "xAI Grok Chat Model2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Update or Remove event agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "MCP Client for Get Event only": {
+      "ai_tool": [
+        [
+          {
+            "node": "Update or Remove event agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update or Remove event agent": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory2": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "MCP Client for Update and Delete": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "xAI Grok Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "xAI Grok Chat Model3": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Get or Create event agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {
+    "When Executed by Another Workflow": [
+      {
+        "json": {
+          "query": "delete the meeting with john event"
+        }
+      }
+    ]
+  },
+  "versionId": "dbba3b4c-7ecc-4120-91ab-8894b0c87b45",
+  "triggerCount": 1,
+  "tags": []
+}
