@@ -1,7 +1,7 @@
 {
-  "createdAt": "2025-05-29T05:00:34.590Z",
-  "updatedAt": "2025-05-29T05:00:48.000Z",
-  "id": "NWIF6G6tMAmf4S4T",
+  "createdAt": "2025-05-29T05:00:20.329Z",
+  "updatedAt": "2025-05-29T05:39:04.000Z",
+  "id": "S890cBi3KJAordiO",
   "name": "My workflow",
   "active": false,
   "isArchived": true,
@@ -241,7 +241,6 @@
     },
     {
       "parameters": {
-        "authentication": "serviceAccount",
         "documentId": {
           "__rl": true,
           "value": "1rLFPxNAwt4v-ESOG81gAhNY2eLGG6Ms3X7kmZptQtfs",
@@ -263,7 +262,13 @@
         340
       ],
       "id": "be508a89-e0b5-4785-aae7-a133ca3dbf36",
-      "name": "Google Sheets"
+      "name": "Google Sheets",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "gw6FpmtTbeALEK1v",
+          "name": "Google Sheets account"
+        }
+      }
     }
   ],
   "connections": {
@@ -389,9 +394,11 @@
     "executionOrder": "v1"
   },
   "staticData": null,
-  "meta": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
   "pinData": {},
-  "versionId": "7d67eb0f-58d3-45a2-81de-c8dc00fdf04e",
+  "versionId": "5e7cad46-c3a2-4379-bec3-a26543f26fdc",
   "triggerCount": 0,
   "tags": []
 }
