@@ -1,0 +1,406 @@
+{
+  "createdAt": "2025-05-31T01:53:37.921Z",
+  "updatedAt": "2025-06-01T02:14:22.000Z",
+  "id": "D0oGGLZXiXBsTFjN",
+  "name": "Daily News",
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 7
+            }
+          ]
+        }
+      },
+      "id": "33a36837-4c37-4fa8-8583-c3264b59959e",
+      "name": "Get Articles Daily",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "position": [
+        560,
+        1700
+      ],
+      "typeVersion": 1.2
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "e9f27ceb-c5f2-4997-8cb1-67576a7bb337",
+              "name": "title",
+              "type": "string",
+              "value": "={{ $json.title }}"
+            },
+            {
+              "id": "4c4f9417-40f2-4fb0-9976-d09f5984680f",
+              "name": "content",
+              "type": "string",
+              "value": "={{ $json['content:encodedSnippet'] ?? $json.contentSnippet}}"
+            },
+            {
+              "id": "e1986bac-054e-4240-ba50-536dbcd27337",
+              "name": "date",
+              "type": "string",
+              "value": "={{ $json.isoDate}}"
+            },
+            {
+              "id": "9566e23c-ac30-4d66-abbd-889f322688b7",
+              "name": "link",
+              "type": "string",
+              "value": "={{ $json.link }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "f214c3b3-acb9-4bfb-b3f3-b257b223f522",
+      "name": "Set and Normalize Fields",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        1220,
+        1700
+      ],
+      "typeVersion": 3.4
+    },
+    {
+      "parameters": {
+        "chatId": "617798358",
+        "text": "=**{{ $json.title }}**\n\n---\n\n## Content\n{{ $json.content }}\n\n## Published\n{{ $json.date }}\n\n## Link\n{{ $json.link }}\n\n---",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1440,
+        1700
+      ],
+      "id": "b390e29d-44d2-4139-841a-a87ab4f133a4",
+      "name": "Telegram",
+      "webhookId": "ca6d7dee-9a37-4f0f-8f76-f1edfbdbcdb0",
+      "credentials": {
+        "telegramApi": {
+          "id": "mu6k0vyaptaTrxai",
+          "name": "Telegram account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "maxItems": 10
+      },
+      "type": "n8n-nodes-base.limit",
+      "typeVersion": 1,
+      "position": [
+        1000,
+        1700
+      ],
+      "id": "12783997-3ff7-4624-b05c-29ab599c8296",
+      "name": "Limit"
+    },
+    {
+      "parameters": {
+        "url": "=https://news.google.com/rss/headlines/section/topic/TECHNOLOGY?hl=zh-HK&gl=HK&ceid=HK:zh-Hant",
+        "options": {
+          "ignoreSSL": false
+        }
+      },
+      "id": "73833ac8-95af-4f8e-92d5-26501e508a0b",
+      "name": "Tech",
+      "type": "n8n-nodes-base.rssFeedRead",
+      "position": [
+        780,
+        1500
+      ],
+      "typeVersion": 1.1
+    },
+    {
+      "parameters": {
+        "url": "=https://news.google.com.hk/news?pz=1&cf=all&ned=hk&hl=zh-TW&output=rss",
+        "options": {
+          "ignoreSSL": false
+        }
+      },
+      "id": "c10257f0-021a-45d6-a3ce-0b72983f6a58",
+      "name": "HK",
+      "type": "n8n-nodes-base.rssFeedRead",
+      "position": [
+        780,
+        1700
+      ],
+      "typeVersion": 1.1
+    },
+    {
+      "parameters": {
+        "url": "=https://news.google.com/rss/headlines/section/topic/WORLD?hl=zh-HK&gl=HK&ceid=HK:zh-Hant",
+        "options": {
+          "ignoreSSL": false
+        }
+      },
+      "id": "80613bd2-dc41-4b25-b448-b4c4ef872c87",
+      "name": "Globe",
+      "type": "n8n-nodes-base.rssFeedRead",
+      "position": [
+        780,
+        1900
+      ],
+      "typeVersion": 1.1
+    },
+    {
+      "parameters": {
+        "url": "=https://news.google.com/rss/headlines/section/topic/BUSINESS?hl=zh-HK&gl=HK&ceid=HK:zh-Hant",
+        "options": {
+          "ignoreSSL": false
+        }
+      },
+      "id": "49f5fb8d-5823-40f0-8b2e-87c993b1a370",
+      "name": "Business",
+      "type": "n8n-nodes-base.rssFeedRead",
+      "position": [
+        780,
+        2100
+      ],
+      "typeVersion": 1.1
+    },
+    {
+      "parameters": {
+        "maxItems": 3
+      },
+      "type": "n8n-nodes-base.limit",
+      "typeVersion": 1,
+      "position": [
+        1000,
+        1500
+      ],
+      "id": "d8bb0b83-1780-4c4f-904d-b189ed7c735a",
+      "name": "Limit1"
+    },
+    {
+      "parameters": {
+        "maxItems": 5
+      },
+      "type": "n8n-nodes-base.limit",
+      "typeVersion": 1,
+      "position": [
+        1000,
+        1900
+      ],
+      "id": "ae455786-e34e-4a94-9f84-95920848adec",
+      "name": "Limit2"
+    },
+    {
+      "parameters": {
+        "maxItems": 5
+      },
+      "type": "n8n-nodes-base.limit",
+      "typeVersion": 1,
+      "position": [
+        1000,
+        2100
+      ],
+      "id": "2403fa18-9522-4b82-9dd6-e2253933a205",
+      "name": "Limit3"
+    },
+    {
+      "parameters": {
+        "maxItems": 5
+      },
+      "type": "n8n-nodes-base.limit",
+      "typeVersion": 1,
+      "position": [
+        1000,
+        1300
+      ],
+      "id": "c1f34d65-7b55-445c-9919-8945255cea24",
+      "name": "Limit4"
+    },
+    {
+      "parameters": {
+        "url": "=https://news.google.com/rss/search?q=%E4%BA%BA%E5%B7%A5%E6%99%BA%E8%83%BD&hl=zh-HK&ceid=HK:zh-Hant",
+        "options": {
+          "ignoreSSL": false
+        }
+      },
+      "id": "5e7950e5-63be-4960-b8f9-e055d3031409",
+      "name": "AI",
+      "type": "n8n-nodes-base.rssFeedRead",
+      "position": [
+        780,
+        1300
+      ],
+      "typeVersion": 1.1
+    }
+  ],
+  "connections": {
+    "Get Articles Daily": {
+      "main": [
+        [
+          {
+            "node": "HK",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Globe",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Business",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Tech",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "AI",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set and Normalize Fields": {
+      "main": [
+        [
+          {
+            "node": "Telegram",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Limit": {
+      "main": [
+        [
+          {
+            "node": "Set and Normalize Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HK": {
+      "main": [
+        [
+          {
+            "node": "Limit",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Tech": {
+      "main": [
+        [
+          {
+            "node": "Limit1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Globe": {
+      "main": [
+        [
+          {
+            "node": "Limit2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Business": {
+      "main": [
+        [
+          {
+            "node": "Limit3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Limit1": {
+      "main": [
+        [
+          {
+            "node": "Set and Normalize Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Limit2": {
+      "main": [
+        [
+          {
+            "node": "Set and Normalize Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Limit3": {
+      "main": [
+        [
+          {
+            "node": "Set and Normalize Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Limit4": {
+      "main": [
+        [
+          {
+            "node": "Set and Normalize Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI": {
+      "main": [
+        [
+          {
+            "node": "Limit4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": {
+    "node:Get Articles Daily": {
+      "recurrenceRules": []
+    }
+  },
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "5cbbf936-8c6b-420e-8cb9-73088c93f51d",
+  "triggerCount": 1,
+  "tags": []
+}
