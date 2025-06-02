@@ -1,6 +1,6 @@
 {
   "createdAt": "2025-05-31T01:53:37.921Z",
-  "updatedAt": "2025-06-01T02:14:22.000Z",
+  "updatedAt": "2025-06-02T02:26:04.000Z",
   "id": "D0oGGLZXiXBsTFjN",
   "name": "Daily News",
   "active": true,
@@ -61,7 +61,7 @@
       "name": "Set and Normalize Fields",
       "type": "n8n-nodes-base.set",
       "position": [
-        1220,
+        1360,
         1700
       ],
       "typeVersion": 3.4
@@ -75,7 +75,7 @@
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        1440,
+        1780,
         1700
       ],
       "id": "b390e29d-44d2-4139-841a-a87ab4f133a4",
@@ -232,6 +232,27 @@
         1300
       ],
       "typeVersion": 1.1
+    },
+    {
+      "parameters": {
+        "sortFieldsUi": {
+          "sortField": [
+            {
+              "fieldName": "date",
+              "order": "descending"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.sort",
+      "typeVersion": 1,
+      "position": [
+        1580,
+        1700
+      ],
+      "id": "acd6ddc6-4f78-4ab9-b91b-05241447bc34",
+      "name": "Sort"
     }
   ],
   "connections": {
@@ -270,7 +291,7 @@
       "main": [
         [
           {
-            "node": "Telegram",
+            "node": "Sort",
             "type": "main",
             "index": 0
           }
@@ -386,6 +407,17 @@
           }
         ]
       ]
+    },
+    "Sort": {
+      "main": [
+        [
+          {
+            "node": "Telegram",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "settings": {
@@ -400,7 +432,7 @@
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "5cbbf936-8c6b-420e-8cb9-73088c93f51d",
+  "versionId": "81246c3a-ad2d-4af1-a719-6b0078c33f97",
   "triggerCount": 1,
   "tags": []
 }
