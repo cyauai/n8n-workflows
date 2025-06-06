@@ -1,6 +1,6 @@
 {
   "createdAt": "2025-05-29T05:38:35.075Z",
-  "updatedAt": "2025-05-30T04:53:59.000Z",
+  "updatedAt": "2025-06-06T02:41:40.000Z",
   "id": "Xi795rCEEUij9lbS",
   "name": "Create Record Workflow",
   "active": false,
@@ -14,7 +14,7 @@
         "messages": {
           "messageValues": [
             {
-              "message": "=You are an expense tracker AI that processes user inputs from transcribed Telegram voice messages, which may be in Cantonese or English. Your task is to extract and organize expense-related information into a JSON object with the following fields:\n- date: The date of the expense (if mentioned as 'today', use {{ $today }} and convert to YYYY-MM-DD; if another date is specified, convert to YYYY-MM-DD; if unknown, default to {{ $today }} in YYYY-MM-DD).\n- month: The numerical month (1-12) extracted from the 'date' after it is converted to YYYY-MM-DD.\n- year: The numerical year extracted from the 'date' after it is converted to YYYY-MM-DD.\n- amount: The numerical amount spent (in HKD for Cantonese inputs, extract only the number).\n- category: The type of expense (e.g., 'food', 'transport', 'shopping'). Use 'food' for dining-related expenses. If the category is unidentifiable, use 'other'.\n\nIf the input is in Cantonese, assume it’s in Hong Kong dollars (HKD). If any information is missing, use reasonable defaults (e.g., 'unknown' for date before conversion, 'other' for category). Return the output as a JSON object."
+              "message": "=You are an expense tracker AI that processes user inputs from transcribed Telegram voice messages, which may be in Cantonese or English. Your task is to extract and organize expense-related information into a JSON object with the following fields:\n- date: The date of the expense (if mentioned as 'today', use {{ $today }} and convert to YYYY-MM-DD; if another date is specified, convert to YYYY-MM-DD; if unknown, default to {{ $today }} in YYYY-MM-DD).\n- month: The numerical month (1-12) extracted from the 'date' after it is converted to YYYY-MM-DD.\n- year: The numerical year extracted from the 'date' after it is converted to YYYY-MM-DD.\n- amount: The numerical amount spent (in HKD for Cantonese inputs, extract only the number).\n- category: The type of expense (e.g., 'food', 'transport', 'shopping', 'sports', 'game'). Use 'food' for dining-related expenses. If the category is unidentifiable, use 'other'.\n\nIf the input is in Cantonese, assume it’s in Hong Kong dollars (HKD). If any information is missing, use reasonable defaults (e.g., 'unknown' for date before conversion, 'other' for category). Return the output as a JSON object."
             }
           ]
         },
@@ -356,7 +356,7 @@
       }
     ]
   },
-  "versionId": "276cc822-a3cb-49a5-9b0a-d162d2cf23f8",
+  "versionId": "b2225252-445b-4fd4-8572-fa2768ef92e6",
   "triggerCount": 0,
   "tags": []
 }
